@@ -27,6 +27,12 @@ def findEncodings(imagesList):
 print("Encoding Started...")
 
 encodeListKnown = findEncodings(imgList)
+encodeListKnownWithIds = [encodeListKnown, studentIds]
 
 print("Encoding Finished.")
 
+file = open("Encode File.p", 'wb')
+pickle.dump(encodeListKnownWithIds, file)
+file.close()
+
+print("File Saved.")
