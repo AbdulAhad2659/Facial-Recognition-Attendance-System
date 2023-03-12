@@ -92,6 +92,11 @@ while True:
                 array = np.frombuffer(blob.download_as_string(), np.uint8)
                 imgStudent = cv2.imdecode(array, cv2.COLOR_BGRA2BGR)
 
+                # Update data of attendance
+                ref = db.reference(f'Students/{id}')
+                studentInfo['Total Attendance: '] += 1
+                ref.child('Total Attendance: ').set(studentInfo['Total Attendance: '])
+
             cv2.putText(imgBackground, str(studentInfo['Total Attendance: ']), (861, 125),
                         cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 255), 2)
             cv2.putText(imgBackground, str(studentInfo['Major: ']), (1006, 555),
