@@ -7,11 +7,15 @@ import cvzone
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
+from firebase_admin import storage
 
 cred = credentials.Certificate("serviceAccountKey.json")
 firebase_admin.initialize_app(cred, {
-    'databaseURL': 'https://faceattendancerealtime-1e56a-default-rtdb.firebaseio.com/'
+    'databaseURL': 'https://faceattendancerealtime-1e56a-default-rtdb.firebaseio.com/',
+    'storageBucket': 'faceattendancerealtime-1e56a.appspot.com'
 })
+
+bucket = storage.bucket()
 
 cap = cv2.VideoCapture(0)
 cap.set(3, 640)
@@ -40,6 +44,7 @@ print("Encode file loaded.")
 modeType = 0
 counter = 0
 id = -1
+imgStudent = []
 
 while True:
     success, img = cap.read()
@@ -78,8 +83,35 @@ while True:
 
         if counter != 0:
             if counter == 1:
+                # Get the data
                 studentInfo = db.reference(f'Students/{id}').get()
                 print(studentInfo)
+
+                # Get the image from storage
+                blob = bucket.get_blob(f'Images/{id}.jpeg')
+                array = np.frombuffer(blob.download_as_string(), np.uint8)
+                imgStudent = cv2.imdecode(array, cv2.COLOR_BGRA2BGR)
+
+            cv2.putText(imgBackground, str(studentInfo['Total Attendance: ']), (861, 125),
+                        cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 255), 2)
+            cv2.putText(imgBackground, str(studentInfo['Major: ']), (1006, 555),
+                        cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 255), 2)
+            cv2.putText(imgBackground, str(id), (1006, 495),
+                        cv2.FONT_HERSHEY_COMPLEX, 0.8, (255, 255, 255), 2)
+            cv2.putText(imgBackground, str(studentInfo['Standing: ']), (910, 625),
+                        cv2.FONT_HERSHEY_COMPLEX, 0.5, (100, 100, 100), 1)
+            cv2.putText(imgBackground, str(studentInfo['Year: ']), (1025, 625),
+                        cv2.FONT_HERSHEY_COMPLEX, 0.6, (100, 100, 100), 1)
+            cv2.putText(imgBackground, str(studentInfo['Starting Year: ']), (1125, 625),
+                        cv2.FONT_HERSHEY_COMPLEX, 0.6, (100, 100, 100), 1)
+
+            (w, h), _ = cv2.getTextSize(studentInfo['Name: '], cv2.FONT_HERSHEY_COMPLEX, 1, 1)
+            offset = (414 - w) // 2
+
+            cv2.putText(imgBackground, str(studentInfo['Name: ']), (808 + offset, 445),
+                        cv2.FONT_HERSHEY_COMPLEX, 1, (50, 50, 50), 1)
+
+            imgBackground[175:175 + 216, 909:909 + 216] = imgStudent
 
             counter += 1
 

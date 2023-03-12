@@ -4,7 +4,8 @@ from firebase_admin import db
 
 cred = credentials.Certificate("serviceAccountKey.json")
 firebase_admin.initialize_app(cred, {
-    'databaseURL': 'https://faceattendancerealtime-1e56a-default-rtdb.firebaseio.com/'
+    'databaseURL': 'https://faceattendancerealtime-1e56a-default-rtdb.firebaseio.com/',
+    'storageBucket': 'faceattendancerealtime-1e56a.appspot.com'
 })
 
 ref = db.reference('Students')
