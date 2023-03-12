@@ -4,6 +4,14 @@ import pickle
 import face_recognition
 import numpy as np
 import cvzone
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import db
+
+cred = credentials.Certificate("serviceAccountKey.json")
+firebase_admin.initialize_app(cred, {
+    'databaseURL': 'https://faceattendancerealtime-1e56a-default-rtdb.firebaseio.com/'
+})
 
 cap = cv2.VideoCapture(0)
 cap.set(3, 640)
@@ -29,6 +37,10 @@ encodeListKnown, studentIds = encodeListKnownWithIds
 
 print("Encode file loaded.")
 
+modeType = 0
+counter = 0
+id = -1
+
 while True:
     success, img = cap.read()
 
@@ -39,17 +51,17 @@ while True:
     encodeCurFrame = face_recognition.face_encodings(imgS, faceCurFrame)
 
     imgBackground[162: 162 + 480, 55: 55 + 640] = img  # Overlay the camera output over graphics
-    imgBackground[44: 44 + 633, 808: 808 + 414] = imgModeList[0]  # Overlay the mode over graphics
+    imgBackground[44: 44 + 633, 808: 808 + 414] = imgModeList[modeType]  # Overlay the mode over graphics
 
     for encodeFace, faceLoc in zip(encodeCurFrame, faceCurFrame):
         matches = face_recognition.compare_faces(encodeListKnown, encodeFace)
         faceDis = face_recognition.face_distance(encodeListKnown, encodeFace)
 
-        print("Matches", matches)
-        print("Face Distance", faceDis)
+        #print("Matches", matches)
+        #print("Face Distance", faceDis)
 
         matchIndex = np.argmin(faceDis)
-        print(matchIndex)
+        #print(matchIndex)
 
         if matches[matchIndex]:
             # print("Known Face Detected")
@@ -58,6 +70,18 @@ while True:
             y1, x2, y2, x1 = y1 * 4, x2 * 4, y2 * 4, x1 * 4
             bbox = 55 + x1, 162 + y1, x2 - x1, y2 - y1
             imgBackground = cvzone.cornerRect(imgBackground, bbox, rt=0)
+            id = studentIds[matchIndex]
+
+            if counter == 0:
+                counter = 1
+                modeType = 1
+
+        if counter != 0:
+            if counter == 1:
+                studentInfo = db.reference(f'Students/{id}').get()
+                print(studentInfo)
+
+            counter += 1
 
     # cv2.imshow("Webcam", img)
     cv2.imshow("Face Attendance", imgBackground)
