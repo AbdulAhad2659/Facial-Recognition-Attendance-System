@@ -101,6 +101,7 @@ while True:
                 ref = db.reference(f'Students/{id}')
                 studentInfo['Total Attendance: '] += 1
                 ref.child('Total Attendance: ').set(studentInfo['Total Attendance: '])
+                ref.child('Last Attendance: ').set(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 
             if 10 < counter < 20:
                 modeType = 2
