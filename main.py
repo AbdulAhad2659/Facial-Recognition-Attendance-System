@@ -8,6 +8,7 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
 from firebase_admin import storage
+from datetime import datetime
 
 cred = credentials.Certificate("serviceAccountKey.json")
 firebase_admin.initialize_app(cred, {
@@ -93,6 +94,10 @@ while True:
                 imgStudent = cv2.imdecode(array, cv2.COLOR_BGRA2BGR)
 
                 # Update data of attendance
+                datetimeObject = datetime.strptime(studentInfo['Last Attendance: '],
+                                                   "%Y-%m-%d %H:%M:%S")
+                secondsElapsed = (datetime.now() - datetimeObject).total_seconds()
+                print(secondsElapsed)
                 ref = db.reference(f'Students/{id}')
                 studentInfo['Total Attendance: '] += 1
                 ref.child('Total Attendance: ').set(studentInfo['Total Attendance: '])
