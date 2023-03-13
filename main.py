@@ -126,6 +126,13 @@ while True:
 
             counter += 1
 
+            if counter >= 20:
+                counter = 0
+                modeType = 0
+                studentInfo = []
+                imgStudent = []
+                imgBackground[44: 44 + 633, 808: 808 + 414] = imgModeList[modeType]
+
     # cv2.imshow("Webcam", img)
     cv2.imshow("Face Attendance", imgBackground)
     cv2.waitKey(1)
