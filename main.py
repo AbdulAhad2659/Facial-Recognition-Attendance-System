@@ -98,39 +98,48 @@ while True:
                                                    "%Y-%m-%d %H:%M:%S")
                 secondsElapsed = (datetime.now() - datetimeObject).total_seconds()
                 print(secondsElapsed)
-                ref = db.reference(f'Students/{id}')
-                studentInfo['Total Attendance: '] += 1
-                ref.child('Total Attendance: ').set(studentInfo['Total Attendance: '])
-                ref.child('Last Attendance: ').set(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 
-            if 10 < counter < 20:
-                modeType = 2
+                if secondsElapsed > 30:
+                    ref = db.reference(f'Students/{id}')
+                    studentInfo['Total Attendance: '] += 1
+                    ref.child('Total Attendance: ').set(studentInfo['Total Attendance: '])
+                    ref.child('Last Attendance: ').set(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 
-            imgBackground[44: 44 + 633, 808: 808 + 414] = imgModeList[modeType]
+                else:
+                    modeType = 3
+                    counter = 0
+                    imgBackground[44: 44 + 633, 808: 808 + 414] = imgModeList[modeType]
 
-            if counter <= 10:
-                cv2.putText(imgBackground, str(studentInfo['Total Attendance: ']), (861, 125),
-                            cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 255), 2)
-                cv2.putText(imgBackground, str(studentInfo['Major: ']), (1006, 555),
-                            cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 255), 2)
-                cv2.putText(imgBackground, str(id), (1006, 495),
-                            cv2.FONT_HERSHEY_COMPLEX, 0.8, (255, 255, 255), 2)
-                cv2.putText(imgBackground, str(studentInfo['Standing: ']), (910, 625),
-                            cv2.FONT_HERSHEY_COMPLEX, 0.5, (100, 100, 100), 1)
-                cv2.putText(imgBackground, str(studentInfo['Year: ']), (1025, 625),
-                            cv2.FONT_HERSHEY_COMPLEX, 0.6, (100, 100, 100), 1)
-                cv2.putText(imgBackground, str(studentInfo['Starting Year: ']), (1125, 625),
-                            cv2.FONT_HERSHEY_COMPLEX, 0.6, (100, 100, 100), 1)
+            if modeType != 3:
 
-                (w, h), _ = cv2.getTextSize(studentInfo['Name: '], cv2.FONT_HERSHEY_COMPLEX, 1, 1)
-                offset = (414 - w) // 2
+                if 10 < counter < 20:
+                    modeType = 2
 
-                cv2.putText(imgBackground, str(studentInfo['Name: ']), (808 + offset, 445),
-                            cv2.FONT_HERSHEY_COMPLEX, 1, (50, 50, 50), 1)
+                imgBackground[44: 44 + 633, 808: 808 + 414] = imgModeList[modeType]
 
-                imgBackground[175:175 + 216, 909:909 + 216] = imgStudent
+                if counter <= 10:
+                    cv2.putText(imgBackground, str(studentInfo['Total Attendance: ']), (861, 125),
+                                cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 255), 2)
+                    cv2.putText(imgBackground, str(studentInfo['Major: ']), (1006, 555),
+                                cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 255), 2)
+                    cv2.putText(imgBackground, str(id), (1006, 495),
+                                cv2.FONT_HERSHEY_COMPLEX, 0.8, (255, 255, 255), 2)
+                    cv2.putText(imgBackground, str(studentInfo['Standing: ']), (910, 625),
+                                cv2.FONT_HERSHEY_COMPLEX, 0.5, (100, 100, 100), 1)
+                    cv2.putText(imgBackground, str(studentInfo['Year: ']), (1025, 625),
+                                cv2.FONT_HERSHEY_COMPLEX, 0.6, (100, 100, 100), 1)
+                    cv2.putText(imgBackground, str(studentInfo['Starting Year: ']), (1125, 625),
+                                cv2.FONT_HERSHEY_COMPLEX, 0.6, (100, 100, 100), 1)
 
-            counter += 1
+                    (w, h), _ = cv2.getTextSize(studentInfo['Name: '], cv2.FONT_HERSHEY_COMPLEX, 1, 1)
+                    offset = (414 - w) // 2
+
+                    cv2.putText(imgBackground, str(studentInfo['Name: ']), (808 + offset, 445),
+                                cv2.FONT_HERSHEY_COMPLEX, 1, (50, 50, 50), 1)
+
+                    imgBackground[175:175 + 216, 909:909 + 216] = imgStudent
+
+                counter += 1
 
             if counter >= 20:
                 counter = 0
