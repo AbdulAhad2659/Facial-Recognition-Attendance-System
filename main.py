@@ -80,6 +80,10 @@ while True:
                 id = studentIds[matchIndex]
 
                 if counter == 0:
+                    cvzone.putTextRect(imgBackground, "LOADING", (275, 400), colorR=(0, 0, 0), colorT=(255, 255, 255),
+                                       thickness=2)
+                    cv2.imshow("Face Attendance", imgBackground)
+                    cv2.waitKey(1)
                     counter = 1
                     modeType = 1
 
